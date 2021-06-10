@@ -8,6 +8,7 @@ namespace NovelRT::Experimental::Audio
 {
   enum class ChannelState
   {
+    Unloaded,
     Initialise,
     Devirtualise,
     Loading,

@@ -54,6 +54,9 @@ set(SOURCES
   Experimental/Graphics/Vulkan/VulkanGraphicsPipelineSignature.cpp
   Experimental/Graphics/Vulkan/VulkanShaderProgram.cpp
   Experimental/Windowing/Glfw/GlfwWindowingDevice.cpp
+  Experimental/Audio/AudioEngine.cpp
+  Experimental/Audio/Null/NullAudioDriver.cpp
+  Experimental/Audio/Null/NullChannel.cpp
 
   Graphics/BasicFillRect.cpp
   Graphics/Camera.cpp
