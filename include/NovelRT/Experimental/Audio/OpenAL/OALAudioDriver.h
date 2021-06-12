@@ -1,11 +1,5 @@
 // Copyright © Matt Jones and Contributors. Licensed under the MIT Licence (MIT). See LICENCE.md in the repository root
 // for more information.
-#include "..\IAudioDriver.h"
-#include "OALChannel.h"
-#include "NovelRT.h"
-#include <map>
-#include <string>
-//#include <thread>
 
 #ifndef NOVELRT_OALAUDIODRIVER_H
 #define NOVELRT_OALAUDIODRIVER_H
@@ -27,7 +21,6 @@ namespace NovelRT::Experimental::Audio::OpenAL
       const ALfloat _pitch = 1.0f;
 
       bool InitialiseOpenAL();
-      int CreateChannel(std::string& fileName);
 
     public:
       OALAudioDriver();
