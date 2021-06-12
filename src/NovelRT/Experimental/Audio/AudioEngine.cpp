@@ -71,7 +71,32 @@ namespace NovelRT::Experimental::Audio
 
       // void Shutdown();
 
-      // void LoadSound(const std::string& soundName, bool isLooping = false);
+  void AudioEngine::LoadSound(const std::string& soundPath, bool isLooping)
+  {
+    SoundWave* newWave = new SoundWave;
+    newWave->looping = isLooping;
+
+    std::ifstream file(soundPath, std::ios::in || std::ios::binary);
+
+    if(!file.is_open())
+    {
+      std::string msg = "Could not open ";
+      msg += soundPath;
+      _logger.logErrorLine(msg);
+      return;
+    }
+    else
+    {
+      char* header = new char[4];
+      file.seekg(0, std::ios::beg);
+      file.read(header, 4);
+
+      std::string msg = "\nFile Loading...\nHeader: ";
+      msg += header;
+      msg += "\n";
+      _logger.logDebugLine(header);
+    }
+  }
       // void UnloadSound(const std::string& soundName);
       // void SetListenerOrientation(const NovelRT::Maths::GeoVector2F& position, const NovelRT::Maths::GeoVector2F& up);
       // int32_t PlaySound(const std::string& soundName, float volume);

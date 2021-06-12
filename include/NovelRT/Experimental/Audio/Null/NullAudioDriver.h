@@ -18,7 +18,7 @@ namespace NovelRT::Experimental::Audio::Null
       NullAudioDriver();
       bool Initialise();
       void Update(float delta);
-      SoundWave* LoadSound(std::string& fileName);
+      // SoundWave* LoadSound(std::string& fileName);
       NullChannel* CreateChannel() final;
   };
 }

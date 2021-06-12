@@ -13,7 +13,7 @@ namespace NovelRT::Experimental::Audio
     public:
       virtual bool Initialise() = 0;
       virtual void Update(float delta) = 0;
-      virtual SoundWave* LoadSound(std::string& fileName) = 0;
+      // virtual SoundWave* LoadSound(std::string& fileName) = 0;
       virtual IChannel* CreateChannel() = 0;
   };
 }

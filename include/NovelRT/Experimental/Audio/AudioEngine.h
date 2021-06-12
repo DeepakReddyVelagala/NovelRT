@@ -25,7 +25,7 @@ namespace NovelRT::Experimental::Audio
       void Update();
       void Shutdown();
 
-      void LoadSound(const std::string& soundName, bool isLooping = false);
+      void LoadSound(const std::string& soundPath, bool isLooping = false);
       void UnloadSound(const std::string& soundName);
       void SetListenerOrientation(const NovelRT::Maths::GeoVector2F& position, const NovelRT::Maths::GeoVector2F& up);
       int32_t PlaySound(const std::string& soundName, float volume);
