@@ -57,6 +57,7 @@ set(SOURCES
   Experimental/Audio/AudioEngine.cpp
   Experimental/Audio/Null/NullAudioDriver.cpp
   Experimental/Audio/Null/NullChannel.cpp
+  Experimental/Audio/Null/NullSound.cpp
 
   Graphics/BasicFillRect.cpp
   Graphics/Camera.cpp

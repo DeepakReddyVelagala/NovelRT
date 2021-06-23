@@ -8,14 +8,36 @@ namespace NovelRT::Experimental::Audio
 {
   class IChannel
   {
-    private:
-      virtual bool Initialise() = 0;
     protected:
-      int32_t channelId;
-      ChannelState state;
+      LoggingService _logger;
+      IAudioDriver* _driver;
+      ChannelState _state = Audio::ChannelState::Initialise;
+      int32_t _soundId;
+      int32_t _channelId;
+      NovelRT::Maths::GeoVector2F _channelPosition;
+      float _volume;
+      SoundWave* _sound;
+
     public:
+      bool stopRequested;
+
+      virtual ~IChannel() = default;
       virtual void Update(float delta) = 0;
+      virtual bool IsPlaying() = 0;
+      virtual bool IsStopped() = 0;
+      virtual float GetVolume() = 0;
+      virtual void SetVolume(float vol) = 0;
+
+      inline ChannelState GetState()
+      {
+        return _state;
+      }
+
+      inline void SetState(ChannelState state)
+      {
+        _state = state;
+      }
+
   };
 }
-
 #endif

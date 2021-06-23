@@ -2,6 +2,8 @@
 // for more information.
 
 #include <NovelRT.h>
+#include <NovelRT/Experimental/Audio/Audio.h>
+#include <NovelRT/Experimental/Audio/Null/Audio.Null.h>
 
 // TODO: What do I do with these?
 extern "C"
@@ -40,10 +42,10 @@ int main(int /*argc*/, char* /*argv*/[])
     std::unique_ptr<NovelRT::Graphics::BasicFillRect> lineRect;
     std::unique_ptr<NovelRT::Graphics::BasicFillRect> inkButton;
     std::unique_ptr<NovelRT::Graphics::BasicFillRect> myBasicFillRect;
-    std::unique_ptr<NovelRT::Graphics::BasicFillRect> playAudioButton;
-    std::unique_ptr<NovelRT::Graphics::BasicFillRect> playAudioButtonTwoElectricBoogaloo;
+    /*std::unique_ptr<NovelRT::Graphics::BasicFillRect> playAudioButton;*/
+    /*std::unique_ptr<NovelRT::Graphics::BasicFillRect> playAudioButtonTwoElectricBoogaloo;*/
     std::unique_ptr<NovelRT::Graphics::TextRect> inkText;
-    std::unique_ptr<NovelRT::Graphics::TextRect> playAudioText;
+    /*std::unique_ptr<NovelRT::Graphics::TextRect> playAudioText;*/
     std::unique_ptr<NovelRT::Input::BasicInteractionRect> inkInteractionRect;
     std::unique_ptr<NovelRT::Input::BasicInteractionRect> interactionRect;
     std::unique_ptr<NovelRT::Input::BasicInteractionRect> memeInteractionRect;
@@ -72,10 +74,13 @@ int main(int /*argc*/, char* /*argv*/[])
 
     auto runner = NovelRT::NovelRunner(0, "NovelRTTest", NovelRT::Windowing::WindowMode::Windowed);
     auto console = NovelRT::LoggingService(NovelRT::Utilities::Misc::CONSOLE_LOG_APP);
-    auto audio = runner.getAudioService();
-    audio->initializeAudio();
-    auto bgm = audio->loadMusic((soundsDirPath / "marisa.ogg").string());
-    auto jojo = audio->loadSound((soundsDirPath / "caution.wav").string());
+
+    auto audio = NovelRT::Experimental::Audio::AudioEngine(NovelRT::Experimental::Audio::AudioBackend::Null);
+    audio.Initialize();
+
+    auto chill = audio.RegisterSound((soundsDirPath / "ChillBreathe.wav").string(), false, 1.0f, true);
+
+    auto judge = audio.RegisterSound((soundsDirPath / "Judgement.ogg").string(), false, 1.0f, false);
 
 #ifdef TEST_ANIM
     auto movingState = std::make_shared<NovelRT::Animation::SpriteAnimatorState>();
@@ -157,27 +162,15 @@ int main(int /*argc*/, char* /*argv*/[])
     auto playButtonTransform = NovelRT::Transform(
         NovelRT::Maths::GeoVector2F(novelChanTransform.position.x - 500, novelChanTransform.position.y), 0,
         NovelRT::Maths::GeoVector2F(200, 200));
-    playAudioButton =
-        runner.getRenderer()->createBasicFillRect(playButtonTransform, 3, NovelRT::Graphics::RGBAConfig(255, 0, 0, 70));
-    auto playAudioTextTransform = playButtonTransform;
-    playAudioTextTransform.scale = NovelRT::Maths::GeoVector2F(1.0f, 1.0f);
-    auto vec = playButtonTransform.position;
-    vec.x = playButtonTransform.position.x - 75;
-    playAudioTextTransform.position = vec;
-    playAudioText =
-        runner.getRenderer()->createTextRect(playAudioTextTransform, 1, NovelRT::Graphics::RGBAConfig(0, 0, 0, 255), 36,
-                                             (fontsDirPath / "Gayathri-Regular.ttf").string());
-    playAudioText->setText("Play Audio");
 
     auto theRealMvpTransform = playButtonTransform;
     auto whatever = playButtonTransform.position;
     whatever.x = whatever.x + 50;
     theRealMvpTransform.position = whatever;
 
-    memeInteractionRect = runner.getInteractionService()->createBasicInteractionRect(theRealMvpTransform, -1);
+    auto playButtonRect = runner.getRenderer()->createBasicFillRect(playButtonTransform, 1, NovelRT::Graphics::RGBAConfig(50, 50, 50, 255));
 
-    playAudioButtonTwoElectricBoogaloo =
-        runner.getRenderer()->createBasicFillRect(theRealMvpTransform, 2, NovelRT::Graphics::RGBAConfig(0, 255, 0, 70));
+    memeInteractionRect = runner.getInteractionService()->createBasicInteractionRect(theRealMvpTransform, 1);
 
     auto inkButtonTransform = NovelRT::Transform(
         NovelRT::Maths::GeoVector2F(novelChanTransform.position.x - 500, novelChanTransform.position.y - 200), 0,
@@ -225,6 +218,8 @@ int main(int /*argc*/, char* /*argv*/[])
         {
             console.logInfoLine("W Key came up!");
         }
+
+        audio.Update(delta);
     };
 
     interactionRect = runner.getInteractionService()->createBasicInteractionRect(playButtonTransform, 2);
@@ -235,7 +230,7 @@ int main(int /*argc*/, char* /*argv*/[])
 
     memeInteractionRect->Interacted += [&] {
         console.logDebug("WAHEYYY");
-        audio->playSound(jojo, 0);
+        audio.PlaySound(chill, 1.0f);
     };
 
     interactionRect->Interacted += [&] {
@@ -255,9 +250,7 @@ int main(int /*argc*/, char* /*argv*/[])
     };
 
     runner.SceneConstructionRequested += [&] {
-        playAudioButton->executeObjectBehaviour();
-        playAudioButtonTwoElectricBoogaloo->executeObjectBehaviour();
-        playAudioText->executeObjectBehaviour();
+        playButtonRect->executeObjectBehaviour();
 
         inkButton->executeObjectBehaviour();
         inkText->executeObjectBehaviour();
@@ -309,7 +302,7 @@ int main(int /*argc*/, char* /*argv*/[])
         dotnetRuntimeService->freeString(result);
     };
 
-    audio->playMusic(bgm, -1);
+    /*audio->playMusic(bgm, -1);*/
     runner.runNovel();
 
     return 0;

@@ -2,7 +2,6 @@
 // for more information.
 
 #include <NovelRT/Experimental/Audio/Audio.h>
-//#include <NovelRT/Experimental/Audio/OpenAL/Audio.OpenAL.h>
 #include <NovelRT/Experimental/Audio/Null/Audio.Null.h>
 
 using namespace NovelRT;
@@ -12,9 +11,7 @@ namespace NovelRT::Experimental::Audio
   AudioEngine::AudioEngine():
     _debugModeEnabled(false),
     _driver(nullptr),
-    _logger(LoggingService::LoggingService(NovelRT::Utilities::Misc::CONSOLE_LOG_AUDIO)),
-    _soundMap(std::map<std::string, SoundWave*>()),
-    _channelMap(std::map<int32_t, IChannel*>())
+    _logger(LoggingService::LoggingService(NovelRT::Utilities::Misc::CONSOLE_LOG_AUDIO))
   {
     //_driver = new OpenAL::OALAudioDriver();
   }
@@ -22,9 +19,7 @@ namespace NovelRT::Experimental::Audio
   AudioEngine::AudioEngine(AudioBackend backend):
     _debugModeEnabled(false),
     _driver(nullptr),
-    _logger(LoggingService::LoggingService(NovelRT::Utilities::Misc::CONSOLE_LOG_AUDIO)),
-    _soundMap(std::map<std::string, SoundWave*>()),
-    _channelMap(std::map<int32_t, IChannel*>())
+    _logger(LoggingService::LoggingService(NovelRT::Utilities::Misc::CONSOLE_LOG_AUDIO))
   {
     if (backend == AudioBackend::Null)
     {
@@ -36,22 +31,9 @@ namespace NovelRT::Experimental::Audio
     }
   }
 
-
   void AudioEngine::Initialize()
   {
-    //Commented until I determine when to remove/change to Info...
-    // #ifdef DEBUG
-    // _debugModeEnabled = true;
-    // #endif
-
-    // if(_debugModeEnabled)
-    // {
-      _logger.setLogLevel(LogLevel::Debug);
-    // }
-    // else
-    // {
-    //   _logger.setLogLevel(LogLevel::Info);
-    // }
+    _logger.setLogLevel(LogLevel::Debug);
 
     _logger.logInfoLine("Initializing Audio Engine...");
     if (_driver->Initialise())
@@ -64,46 +46,60 @@ namespace NovelRT::Experimental::Audio
     }
   }
 
-  void AudioEngine::Update()
+  void AudioEngine::Update(NovelRT::Timing::Timestamp stamp)
   {
-    _driver->Update(0);
+    _driver->Update(stamp.getSecondsFloat());
   }
 
-      // void Shutdown();
-
-  void AudioEngine::LoadSound(const std::string& soundPath, bool isLooping)
+  void AudioEngine::LoadSound(int32_t soundId)
   {
-    SoundWave* newWave = new SoundWave;
-    newWave->looping = isLooping;
+    _driver->LoadSound(soundId);
+  }
 
-    std::ifstream file(soundPath, std::ios::in || std::ios::binary);
+  int32_t AudioEngine::RegisterSound(const std::string& sndName, float defaultVolume, bool isLooping, bool loadNow)
+  {
+    SoundWave* wave = new SoundWave{ sndName, isLooping, defaultVolume, nullptr };
 
-    if(!file.is_open())
+    int32_t id = _driver->RegisterSound(*wave);
+
+    if(loadNow)
     {
-      std::string msg = "Could not open ";
-      msg += soundPath;
-      _logger.logErrorLine(msg);
+      LoadSound(id);
+    }
+
+    return id;
+  }
+
+  int32_t AudioEngine::PlaySound(int32_t soundId, float volume)
+  {
+    return _driver->PlaySound(soundId, volume);
+  }
+
+  void AudioEngine::StopChannel(int32_t channelId)
+  {
+    auto exists = _driver->channelMap.find(channelId);
+    if(exists == _driver->channelMap.end())
+    {
       return;
     }
-    else
-    {
-      char* header = new char[4];
-      file.seekg(0, std::ios::beg);
-      file.read(header, 4);
 
-      std::string msg = "\nFile Loading...\nHeader: ";
-      msg += header;
-      msg += "\n";
-      _logger.logDebugLine(header);
+    exists->second->stopRequested = true;
+  }
+
+  void AudioEngine::Shutdown()
+  {
+    if (_driver != nullptr)
+    {
+      delete _driver;
     }
   }
-      // void UnloadSound(const std::string& soundName);
-      // void SetListenerOrientation(const NovelRT::Maths::GeoVector2F& position, const NovelRT::Maths::GeoVector2F& up);
-      // int32_t PlaySound(const std::string& soundName, float volume);
-      // void StopChannel(int32_t channelId);
-      // void PauseChannel(int32_t channelId);
-      // void StopAllChannels();
-      // void SetChannelVolume(int32_t channelId, float volume);
-      // bool IsPlaying(int32_t channelId);
-      // bool IsStopped(int32_t channelId);
+
+// void UnloadSound(const std::string& soundName)
+// void SetListenerOrientation(const NovelRT::Maths::GeoVector2F& position, const NovelRT::Maths::GeoVector2F& up);
+// void PauseChannel(int32_t channelId);
+// void StopAllChannels();
+// void SetChannelVolume(int32_t channelId, float volume);
+// bool IsPlaying(int32_t channelId);
+// bool IsStopped(int32_t channelId);
+
 }

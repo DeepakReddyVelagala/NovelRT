@@ -12,25 +12,26 @@ namespace NovelRT::Experimental::Audio
   class AudioEngine
   {
     private:
+      const size_t _bufferSize = 2048;
       bool _debugModeEnabled;
       IAudioDriver* _driver;
       LoggingService _logger;
-      std::map<std::string, SoundWave*> _soundMap;
-      std::map<int32_t, IChannel*> _channelMap;
 
     public:
       AudioEngine();
       AudioEngine(AudioBackend backend);
       void Initialize();
-      void Update();
+      void Update(NovelRT::Timing::Timestamp stamp);
       void Shutdown();
 
-      void LoadSound(const std::string& soundPath, bool isLooping = false);
-      void UnloadSound(const std::string& soundName);
+      int32_t RegisterSound(const std::string& sndName, float defaultVolume, bool isLooping, bool loadNow = true);
+      void UnregisterSound(int32_t soundId);
+      void LoadSound(int32_t soundId);
+      void UnloadSound(int32_t soundId);
       void SetListenerOrientation(const NovelRT::Maths::GeoVector2F& position, const NovelRT::Maths::GeoVector2F& up);
-      int32_t PlaySound(const std::string& soundName, float volume);
+      int32_t PlaySound(int32_t soundId, float volume);
       void StopChannel(int32_t channelId);
-      void PauseChannel(int32_t channelId);
+      //void PauseChannel(int32_t channelId);
       void StopAllChannels();
       void SetChannelVolume(int32_t channelId, float volume);
       bool IsPlaying(int32_t channelId);

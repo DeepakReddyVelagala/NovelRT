@@ -10,10 +10,16 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <thread>
+#include <future>
+#include <vector>
+#include <mutex>
 #include "..\..\Utilities\Lazy.h"
 #include "..\..\Utilities\Misc.h"
 #include "..\..\Maths\GeoVector2F.h"
 #include "..\..\LoggingService.h"
+#include "..\..\Timing\Timestamp.h"
+#include <sndfile.h>
 
 /**
  * @brief The experimental Audio API. Comes with built-in support for the ECS.
@@ -24,6 +30,7 @@ namespace NovelRT::Experimental::Audio
   enum class ChannelState : int32_t;
   class IAudioDriver;
   class IChannel;
+  class ISound;
   struct SoundWave;
   class AudioEngine;
 }
@@ -33,6 +40,7 @@ namespace NovelRT::Experimental::Audio
 #include "ChannelState.h"
 #include "IAudioDriver.h"
 #include "IChannel.h"
+#include "ISound.h"
 #include "SoundWave.h"
 #include "AudioEngine.h"
 

@@ -9,11 +9,17 @@ namespace NovelRT::Experimental::Audio::Null
   class NullChannel : public Audio::IChannel
   {
     private:
-      bool Initialise() final;
-
+      void LoadSound(int32_t soundId);
     public:
-      NullChannel(int32_t channel);
+      NullChannel(NullAudioDriver* driver, int32_t soundId, SoundWave* wave, float volume);
       void Update(float delta) final;
+      bool IsStopped() final;
+      bool IsPlaying() final;
+      float GetVolume() final;
+      void SetVolume(float vol) final;
+
+      ~NullChannel() final;
+
   };
 }
 

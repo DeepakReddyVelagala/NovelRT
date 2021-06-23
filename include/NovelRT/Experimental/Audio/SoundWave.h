@@ -8,11 +8,10 @@ namespace NovelRT::Experimental::Audio
 {
   struct SoundWave
   {
-    std::string fileName;
+    std::string soundName;
     bool looping;
-    bool streaming;
-    char* buffer;
-    int32_t sampleRate;
+    float defaultVolume;
+    ISound* sound;
   };
 }
 

@@ -22,6 +22,7 @@ namespace NovelRT::Experimental::Audio::Null
 
 //Audio.OpenAL Types
 #include "NullChannel.h"
+#include "NullSound.h"
 #include "NullAudioDriver.h"
 
 
